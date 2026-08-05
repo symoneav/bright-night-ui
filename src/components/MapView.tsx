@@ -1,15 +1,14 @@
-"use client";
-
 import { useEffect, useMemo, useState } from "react";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import L from "leaflet";
-import MarkerClusterGroup from "react-leaflet-cluster";
-import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
+import { MapContainer, TileLayer } from "react-leaflet";
 import { filterSitesWithinRadius } from "@/lib/geo";
 import type { CleanSite } from "@/types/site";
 import { NearbySiteMarkers } from "./NearBySiteMarkers";
 import { CenterMarker } from "./CenterMarker";
+import { InitialLocationSync } from "@/utils/initial-location-sync";
+import { MapRecenterButton } from "./RecenterButton";
 
 // Fix default marker icons broken by bundlers
 delete (L.Icon.Default.prototype as unknown as { _getIconUrl?: unknown })
@@ -32,32 +31,12 @@ type MapViewProps = {
   sites: CleanSite[];
 };
 
-function RecenterMap({
-  center,
-  zoom,
-}: {
-  center: [number, number];
-  zoom: number;
-}) {
-  const map = useMap();
-
-  useEffect(() => {
-    map.setView(center, zoom);
-  }, [map, center, zoom]);
-
-  return null;
-}
-
-
-
 export default function MapView({ sites }: MapViewProps) {
-  const [center, setCenter] = useState<[number, number]>(US_CENTER);
-  const [zoom, setZoom] = useState(DEFAULT_ZOOM);
   const [userLocation, setUserLocation] = useState<[number, number] | null>(
     null,
   );
 
-const nearbySites = useMemo(() => {
+  const nearbySites = useMemo(() => {
     if (!userLocation) return [];
 
     return filterSitesWithinRadius(
@@ -76,13 +55,10 @@ const nearbySites = useMemo(() => {
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        const location: [number, number] = [
+        setUserLocation([
           position.coords.latitude,
           position.coords.longitude,
-        ];
-        setCenter(location);
-        setUserLocation(location);
-        setZoom(USER_ZOOM);
+        ]);
       },
       () => {
         // Permission denied or unavailable — keep US fallback
@@ -94,8 +70,8 @@ const nearbySites = useMemo(() => {
   return (
     <Box sx={{ width: "100%", height: "100%", position: "relative" }}>
       <MapContainer
-        center={center}
-        zoom={zoom}
+        center={US_CENTER}
+        zoom={DEFAULT_ZOOM}
         style={{ width: "100%", height: "100%" }}
         scrollWheelZoom
       >
@@ -103,7 +79,10 @@ const nearbySites = useMemo(() => {
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        <RecenterMap center={center} zoom={zoom} />
+        <InitialLocationSync location={userLocation} zoom={USER_ZOOM} />
+        {userLocation && (
+          <MapRecenterButton center={userLocation} zoom={USER_ZOOM} />
+        )}
         <CenterMarker position={userLocation} />
         <NearbySiteMarkers sites={nearbySites} />
       </MapContainer>

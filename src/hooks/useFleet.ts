@@ -1,5 +1,3 @@
-"use client";
-
 import { useCallback, useEffect, useState } from "react";
 import { loadFleet } from "@/data/fleet";
 import type { CleanSite } from "@/types/site";
