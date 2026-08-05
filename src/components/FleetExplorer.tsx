@@ -7,6 +7,10 @@ import Typography from "@mui/material/Typography";
 import dynamic from "next/dynamic";
 import { useState } from "react";
 import { useFleet } from "@/hooks/useFleet";
+import {
+  ADD_SITE_SUPPORT_MESSAGE,
+  isAddSiteUserError,
+} from "@/data/fleet";
 import type { CleanSite, SiteFormInput } from "@/types/site";
 import { PVFleetExplorerHeader } from "./PVFleetExplorerHeader/pv-fleet-explorer-header";
 
@@ -25,6 +29,7 @@ export const FleetExplorer = () => {
 
   const handleAddSite = async (input: SiteFormInput) => {
     setAddSiteError(null);
+    setSuccessMessage(null);
 
     try {
       const site = await addSite(input);
@@ -35,9 +40,12 @@ export const FleetExplorer = () => {
           : `Successfully added ${site.systemId}. Coordinates missing, so it was not placed on the map.`,
       );
     } catch (error) {
-      setAddSiteError(
-        error instanceof Error ? error.message : "Failed to add site",
-      );
+      if (isAddSiteUserError(error)) {
+        throw error;
+      }
+
+      setAddSiteError(ADD_SITE_SUPPORT_MESSAGE);
+      throw error;
     }
   };
 
@@ -60,7 +68,17 @@ export const FleetExplorer = () => {
 
       {addSiteError && (
         <Alert severity="error" onClose={() => setAddSiteError(null)}>
-          {addSiteError}
+          {addSiteError === ADD_SITE_SUPPORT_MESSAGE ? (
+            <>
+              Something went wrong while adding the site. Please contact{" "}
+              <a href="mailto:engineer@brightnight.com">
+                engineer@brightnight.com
+              </a>{" "}
+              for help.
+            </>
+          ) : (
+            addSiteError
+          )}
         </Alert>
       )}
 

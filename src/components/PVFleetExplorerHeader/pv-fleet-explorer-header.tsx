@@ -10,7 +10,7 @@ export type PVFleetExplorerHeaderProps = {
   sites: CleanSite[];
   mappableCount: number;
   missingCoordCount: number;
-  onAddSite: (input: SiteFormInput) => void;
+  onAddSite: (input: SiteFormInput) => Promise<void>;
 };
 
 export const PVFleetExplorerHeader = ({

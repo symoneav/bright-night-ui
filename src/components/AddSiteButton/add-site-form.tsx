@@ -1,6 +1,7 @@
 import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
+import CircularProgress from "@mui/material/CircularProgress";
 import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
@@ -19,6 +20,9 @@ import {
 type AddSiteFormProps = {
   open: boolean;
   existingSystemIds?: string[];
+  isSubmitting: boolean;
+  serverFieldErrors?: Partial<Record<FieldError["field"] | "form", string>>;
+  submitError?: string | null;
   onCancel: () => void;
   onSubmit: (input: SiteFormInput) => void;
 };
@@ -26,18 +30,21 @@ type AddSiteFormProps = {
 export function AddSiteForm({
   open,
   existingSystemIds = [],
+  isSubmitting,
+  serverFieldErrors = {},
+  submitError = null,
   onCancel,
   onSubmit,
 }: AddSiteFormProps) {
   const [values, setValues] = useState<SiteFormInput>(EMPTY_SITE_FORM_INPUT);
-  const [fieldErrors, setFieldErrors] = useState<
+  const [clientFieldErrors, setClientFieldErrors] = useState<
     Partial<Record<FieldError["field"], string>>
   >({});
 
   useEffect(() => {
     if (open) {
       setValues(EMPTY_SITE_FORM_INPUT);
-      setFieldErrors({});
+      setClientFieldErrors({});
     }
   }, [open]);
 
@@ -45,7 +52,7 @@ export function AddSiteForm({
     (field: keyof SiteFormInput) =>
     (event: React.ChangeEvent<HTMLInputElement>) => {
       setValues((current) => ({ ...current, [field]: event.target.value }));
-      setFieldErrors((current) => ({ ...current, [field]: undefined }));
+      setClientFieldErrors((current) => ({ ...current, [field]: undefined }));
     };
 
   const setBooleanField =
@@ -62,11 +69,11 @@ export function AddSiteForm({
 
     const errors = validateSiteForm(values, existingSystemIds);
     if (errors.length > 0) {
-      setFieldErrors(fieldErrorsByField(errors));
+      setClientFieldErrors(fieldErrorsByField(errors));
       return;
     }
 
-    setFieldErrors({});
+    setClientFieldErrors({});
     onSubmit({
       ...values,
       systemId: values.systemId.trim(),
@@ -75,7 +82,8 @@ export function AddSiteForm({
     });
   };
 
-  const formError = fieldErrors.form;
+  const fieldErrors = { ...serverFieldErrors, ...clientFieldErrors };
+  const formError = fieldErrors.form ?? submitError;
 
   return (
     <Box component="form" onSubmit={handleSubmit} noValidate>
@@ -94,7 +102,20 @@ export function AddSiteForm({
         </Alert>
       )}
 
-      <Stack spacing={2} sx={{ maxHeight: "70vh", overflowY: "auto", pr: 0.5 }}>
+      <Stack
+        component="fieldset"
+        disabled={isSubmitting}
+        spacing={2}
+        sx={{
+          maxHeight: "70vh",
+          overflowY: "auto",
+          pr: 0.5,
+          border: 0,
+          m: 0,
+          p: 0,
+          minWidth: 0,
+        }}
+      >
         <TextField
           name="systemId"
           label="System ID"
@@ -273,11 +294,25 @@ export function AddSiteForm({
         justifyContent="flex-end"
         sx={{ mt: 3 }}
       >
-        <Button type="button" variant="outlined" onClick={onCancel}>
+        <Button
+          type="button"
+          variant="outlined"
+          onClick={onCancel}
+          disabled={isSubmitting}
+        >
           Cancel
         </Button>
-        <Button type="submit" variant="contained">
-          Add Site
+        <Button
+          type="submit"
+          variant="contained"
+          disabled={isSubmitting}
+          startIcon={
+            isSubmitting ? (
+              <CircularProgress size={16} color="inherit" />
+            ) : undefined
+          }
+        >
+          {isSubmitting ? "Adding…" : "Add Site"}
         </Button>
       </Stack>
     </Box>
