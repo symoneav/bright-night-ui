@@ -1,5 +1,5 @@
 import { computeConfidence, computeFlags } from "@/lib/derived";
-import type { CleanSite, RawCsvRow } from "@/types/site";
+import type { CleanSite, RawCsvRow, SiteFormInput } from "@/types/site";
 
 const MAX_SYSTEM_SIZE_KW = 10_000;
 const COORD_SENTINEL = -9999;
@@ -120,4 +120,28 @@ export function normalizeSite(row: RawCsvRow): CleanSite {
 
 export function normalizeFleet(rows: RawCsvRow[]): CleanSite[] {
   return rows.map(normalizeSite);
+}
+
+function booleanToCsv(value: boolean | null): string {
+  if (value === null) return "-1";
+  return value ? "1" : "0";
+}
+
+export function normalizeSiteFormInput(input: SiteFormInput): CleanSite {
+  return normalizeSite({
+    system_ID: input.systemId.trim(),
+    state: input.state.trim(),
+    zip_code: input.zipCode.trim(),
+    system_size_DC: input.systemSizeKw.trim() || "-1",
+    azimuth_1: input.azimuthDeg.trim() || "-1",
+    tilt_1: input.tiltDeg.trim() || "-1",
+    module_quantity_1: input.moduleQuantity.trim() || "-1",
+    efficiency_1: input.efficiency.trim() || "-1",
+    tracking: booleanToCsv(input.tracking),
+    installation_date: input.installationDate.trim() || "-1",
+    third_party_owned: booleanToCsv(input.thirdPartyOwned),
+    ground_mounted: booleanToCsv(input.groundMounted),
+    latitude: input.lat.trim(),
+    longitude: input.lng.trim(),
+  });
 }

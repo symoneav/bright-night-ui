@@ -7,6 +7,7 @@ import { filterSitesWithinRadius } from "@/lib/geo";
 import type { CleanSite } from "@/types/site";
 import { NearbySiteMarkers } from "./NearBySiteMarkers";
 import { CenterMarker } from "./CenterMarker";
+import { FocusedSiteLayer } from "./FocusedSite";
 import { InitialLocationSync } from "@/utils/initial-location-sync";
 import { MapRecenterButton } from "./RecenterButton";
 
@@ -29,22 +30,32 @@ const NEARBY_RADIUS_MILES = 100;
 
 type MapViewProps = {
   sites: CleanSite[];
+  focusedSite?: CleanSite | null;
 };
 
-export default function MapView({ sites }: MapViewProps) {
+export default function MapView({ sites, focusedSite = null }: MapViewProps) {
   const [userLocation, setUserLocation] = useState<[number, number] | null>(
     null,
   );
 
   const nearbySites = useMemo(() => {
-    if (!userLocation) return [];
+    const radiusSites = userLocation
+      ? filterSitesWithinRadius(
+          sites,
+          { lat: userLocation[0], lng: userLocation[1] },
+          NEARBY_RADIUS_MILES,
+        )
+      : [];
 
-    return filterSitesWithinRadius(
-      sites,
-      { lat: userLocation[0], lng: userLocation[1] },
-      NEARBY_RADIUS_MILES,
-    );
-  }, [sites, userLocation]);
+    if (
+      focusedSite?.coordinates &&
+      !radiusSites.some((site) => site.systemId === focusedSite.systemId)
+    ) {
+      return [...radiusSites, focusedSite];
+    }
+
+    return radiusSites;
+  }, [sites, userLocation, focusedSite]);
 
   useEffect(() => {
     window.dispatchEvent(new Event("resize"));
@@ -81,7 +92,11 @@ export default function MapView({ sites }: MapViewProps) {
           <MapRecenterButton center={userLocation} zoom={USER_ZOOM} />
         )}
         <CenterMarker position={userLocation} />
-        <NearbySiteMarkers sites={nearbySites} />
+        <NearbySiteMarkers
+          sites={nearbySites}
+          excludeSystemId={focusedSite?.systemId}
+        />
+        {focusedSite?.coordinates && <FocusedSiteLayer site={focusedSite} />}
       </MapContainer>
       <Box
         sx={{

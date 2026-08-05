@@ -40,3 +40,12 @@ body {
   border: 2px solid #fff;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
 }
+
+.site-marker-icon__dot--focused {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #2e7d32;
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 2px rgba(46, 125, 50, 0.35);
+}

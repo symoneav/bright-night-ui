@@ -42,10 +42,29 @@ export type SiteFormInput = {
   systemSizeKw: string;
   azimuthDeg: string;
   tiltDeg: string;
+  moduleQuantity: string;
+  efficiency: string;
   installationDate: string;
   tracking: boolean | null;
   thirdPartyOwned: boolean | null;
   groundMounted: boolean | null;
+};
+
+export const EMPTY_SITE_FORM_INPUT: SiteFormInput = {
+  systemId: "",
+  state: "",
+  zipCode: "",
+  lat: "",
+  lng: "",
+  systemSizeKw: "",
+  azimuthDeg: "",
+  tiltDeg: "",
+  moduleQuantity: "",
+  efficiency: "",
+  installationDate: "",
+  tracking: null,
+  thirdPartyOwned: null,
+  groundMounted: null,
 };
 
 export type FieldError = {

@@ -1,4 +1,4 @@
-import { CleanSite } from "@/types/site";
+import type { CleanSite, SiteFormInput } from "@/types/site";
 import { Typography } from "@mui/material";
 import Box from "@mui/material/Box";
 import { AddSiteButton } from "../AddSiteButton/add-site-button";
@@ -10,6 +10,7 @@ export type PVFleetExplorerHeaderProps = {
   sites: CleanSite[];
   mappableCount: number;
   missingCoordCount: number;
+  onAddSite: (input: SiteFormInput) => void;
 };
 
 export const PVFleetExplorerHeader = ({
@@ -18,6 +19,7 @@ export const PVFleetExplorerHeader = ({
   sites,
   mappableCount,
   missingCoordCount,
+  onAddSite,
 }: PVFleetExplorerHeaderProps) => {
   return (
     <Box
@@ -46,7 +48,10 @@ export const PVFleetExplorerHeader = ({
           </Typography>
         )}
       </div>
-      <AddSiteButton />
+      <AddSiteButton
+        existingSystemIds={sites.map((site) => site.systemId)}
+        onAddSite={onAddSite}
+      />
     </Box>
   );
 };

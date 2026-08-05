@@ -31,6 +31,13 @@ export function useFleet() {
     }
   }, []);
 
+  const addSite = useCallback((site: CleanSite) => {
+    setState((prev) => ({
+      ...prev,
+      sites: [...prev.sites, site],
+    }));
+  }, []);
+
   useEffect(() => {
     void refresh();
   }, [refresh]);
@@ -38,5 +45,6 @@ export function useFleet() {
   return {
     ...state,
     refresh,
+    addSite,
   };
 }

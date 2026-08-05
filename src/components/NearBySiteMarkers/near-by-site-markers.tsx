@@ -3,8 +3,18 @@ import { Marker, Popup } from "react-leaflet";
 import MarkerClusterGroup from "react-leaflet-cluster";
 import L from "leaflet";
 
-export const NearbySiteMarkers = ({ sites }: { sites: CleanSite[] }) => {
-  if (sites.length === 0) return null;
+export const NearbySiteMarkers = ({
+  sites,
+  excludeSystemId,
+}: {
+  sites: CleanSite[];
+  excludeSystemId?: string;
+}) => {
+  const visibleSites = excludeSystemId
+    ? sites.filter((site) => site.systemId !== excludeSystemId)
+    : sites;
+
+  if (visibleSites.length === 0) return null;
 
   const siteIcon = L.divIcon({
     className: "site-marker-icon",
@@ -15,7 +25,7 @@ export const NearbySiteMarkers = ({ sites }: { sites: CleanSite[] }) => {
 
   return (
     <MarkerClusterGroup chunkedLoading>
-      {sites.map((site) => (
+      {visibleSites.map((site) => (
         <Marker
           key={site.systemId}
           position={[site.coordinates!.lat, site.coordinates!.lng]}
