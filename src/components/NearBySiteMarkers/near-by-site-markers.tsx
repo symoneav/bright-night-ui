@@ -1,3 +1,4 @@
+import { SiteDetailContent } from "@/components/SiteDetail";
 import { CleanSite } from "@/types/site";
 import { Marker, Popup } from "react-leaflet";
 import MarkerClusterGroup from "react-leaflet-cluster";
@@ -31,16 +32,8 @@ export const NearbySiteMarkers = ({
           position={[site.coordinates!.lat, site.coordinates!.lng]}
           icon={siteIcon}
         >
-          <Popup>
-            <strong>{site.systemId}</strong>
-            <br />
-            {site.state} {site.zipCode}
-            {site.systemSizeKw !== null && (
-              <>
-                <br />
-                {site.systemSizeKw.toFixed(1)} kW
-              </>
-            )}
+          <Popup minWidth={240}>
+            <SiteDetailContent site={site} />
           </Popup>
         </Marker>
       ))}
