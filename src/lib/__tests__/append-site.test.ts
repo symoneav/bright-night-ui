@@ -1,3 +1,6 @@
+/**
+ * @vitest-environment node
+ */
 import { mkdtemp, readFile, rm, writeFile } from "fs/promises";
 import os from "os";
 import path from "path";

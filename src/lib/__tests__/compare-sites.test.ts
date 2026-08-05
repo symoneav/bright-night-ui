@@ -1,3 +1,9 @@
+/**
+ * @vitest-environment node
+ */
+/**
+ * @vitest-environment node
+ */
 import { describe, expect, it } from "vitest";
 import {
   buildComparisonChartData,

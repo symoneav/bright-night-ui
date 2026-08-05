@@ -1,3 +1,6 @@
+/**
+ * @vitest-environment node
+ */
 import { describe, expect, it } from "vitest";
 import { computeConfidence, computeFlags } from "@/lib/derived";
 import type { CleanSite } from "@/types/site";

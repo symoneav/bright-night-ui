@@ -1,3 +1,6 @@
+/**
+ * @vitest-environment node
+ */
 import { describe, expect, it } from "vitest";
 import { normalizeSite } from "@/lib/normalize";
 import { cleanSiteToRawCsvRow, rawCsvRowToLine } from "@/lib/serialize";
