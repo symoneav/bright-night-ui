@@ -8,7 +8,7 @@ type RecenterButtonProps = {
   onRecenter: () => void;
 };
 
- const RecenterButton = ({ onRecenter }: RecenterButtonProps) => {
+const RecenterButton = ({ onRecenter }: RecenterButtonProps) => {
   return (
     <IconButton
       aria-label="Recenter on your location"
@@ -28,14 +28,14 @@ type RecenterButtonProps = {
       </SvgIcon>
     </IconButton>
   );
-}
+};
 
 type MapRecenterButtonProps = {
   center: [number, number];
   zoom: number;
 };
 
-export  const MapRecenterButton = ({ center, zoom }: MapRecenterButtonProps) => {
+export const MapRecenterButton = ({ center, zoom }: MapRecenterButtonProps) => {
   const map = useMap();
 
   return (
@@ -47,9 +47,7 @@ export  const MapRecenterButton = ({ center, zoom }: MapRecenterButtonProps) => 
         zIndex: 1000,
       }}
     >
-      <RecenterButton
-        onRecenter={() => flyToLocation(map, center, zoom)}
-      />
+      <RecenterButton onRecenter={() => flyToLocation(map, center, zoom)} />
     </Box>
   );
-}
+};

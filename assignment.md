@@ -22,7 +22,7 @@ visualizations behave like production code.**
 The dataset has ~10,000 records. You must **not** dump 10,000 markers onto a map
 or 10,000 rows into the DOM and call it done — it will be unusable and slow.
 
-The point of the exercise is that the user has to *explore*: the UI should let
+The point of the exercise is that the user has to _explore_: the UI should let
 them **narrow, aggregate, or cluster** the fleet and then drill into detail. How
 you do that — marker clustering, aggregating to state/region, filtering to a
 working set, viewport-based rendering, virtualization — is your call, but a naive
@@ -46,21 +46,21 @@ working set, viewport-based rendering, virtualization — is your call, but a na
 
 Columns in `pv_sites_sample.csv`:
 
-| column | meaning |
-|---|---|
-| `system_ID` | unique id, e.g. `SITE_00001` |
-| `state` | US state code |
-| `zip_code` | US zip (only location detail besides state) |
-| `system_size_DC` | system size in kW |
-| `azimuth_1` | panel compass direction, degrees (N=0, E=90, S=180, W=270) |
-| `tilt_1` | panel angle from horizontal (0=flat, 90=vertical) |
-| `module_quantity_1` | number of modules |
-| `efficiency_1` | module efficiency (fraction) |
-| `tracking` | 1 = tracking system, 0 = fixed-tilt |
-| `installation_date` | ISO date |
-| `third_party_owned` | 1 = third-party owned |
-| `ground_mounted` | 1 = ground-mounted (0 = roof) |
-| `latitude`, `longitude` | map coordinates (`-9999` when missing) |
+| column                  | meaning                                                    |
+| ----------------------- | ---------------------------------------------------------- |
+| `system_ID`             | unique id, e.g. `SITE_00001`                               |
+| `state`                 | US state code                                              |
+| `zip_code`              | US zip (only location detail besides state)                |
+| `system_size_DC`        | system size in kW                                          |
+| `azimuth_1`             | panel compass direction, degrees (N=0, E=90, S=180, W=270) |
+| `tilt_1`                | panel angle from horizontal (0=flat, 90=vertical)          |
+| `module_quantity_1`     | number of modules                                          |
+| `efficiency_1`          | module efficiency (fraction)                               |
+| `tracking`              | 1 = tracking system, 0 = fixed-tilt                        |
+| `installation_date`     | ISO date                                                   |
+| `third_party_owned`     | 1 = third-party owned                                      |
+| `ground_mounted`        | 1 = ground-mounted (0 = roof)                              |
+| `latitude`, `longitude` | map coordinates (`-9999` when missing)                     |
 
 **The data is messy.** Missing values are coded as a sentinel (`-1`, and in the
 source dataset sometimes `-9999`) rather than left blank — most sites are missing

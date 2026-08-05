@@ -6,41 +6,27 @@ import CircularProgress from "@mui/material/CircularProgress";
 import Typography from "@mui/material/Typography";
 import dynamic from "next/dynamic";
 import { useFleet } from "@/hooks/useFleet";
+import { PVFleetExplorerHeader } from "./PVFleetExplorerHeader/pv-fleet-explorer-header";
 
 const MapView = dynamic(() => import("@/components/MapView"), { ssr: false });
 
 export default function FleetExplorer() {
   const { sites, loading, error } = useFleet();
 
-  const mappableCount = sites.filter((site) => site.coordinates !== null).length;
+  const mappableCount = sites.filter(
+    (site) => site.coordinates !== null,
+  ).length;
   const missingCoordCount = sites.length - mappableCount;
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", height: "100vh" }}>
-      <Box
-        component="header"
-        sx={{
-          px: 2,
-          py: 1.5,
-          borderBottom: 1,
-          borderColor: "divider",
-          bgcolor: "background.paper",
-        }}
-      >
-        <Typography variant="h6" component="h1">
-          PV Fleet Explorer
-        </Typography>
-        {!loading && !error && sites.length > 0 && (
-          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-            {sites.length.toLocaleString()} sites loaded ({mappableCount.toLocaleString()}{" "}
-            on map
-            {missingCoordCount > 0
-              ? `, ${missingCoordCount.toLocaleString()} missing coordinates`
-              : ""}
-            )
-          </Typography>
-        )}
-      </Box>
+      <PVFleetExplorerHeader
+        loading={loading}
+        error={error}
+        sites={sites}
+        mappableCount={mappableCount}
+        missingCoordCount={missingCoordCount}
+      />
 
       {loading && (
         <Box

@@ -12,17 +12,17 @@ Fleet data lives in `data/pv_sites_sample.csv` (not `public/`). The server reads
 
 ## Stack & packages
 
-| Package | Role |
-|---|---|
-| **next** | App framework — App Router, API routes, production build |
-| **react** / **react-dom** | UI (v19) |
-| **typescript** | Typed models and pure logic |
+| Package                                                      | Role                                                                                  |
+| ------------------------------------------------------------ | ------------------------------------------------------------------------------------- |
+| **next**                                                     | App framework — App Router, API routes, production build                              |
+| **react** / **react-dom**                                    | UI (v19)                                                                              |
+| **typescript**                                               | Typed models and pure logic                                                           |
 | **@mui/material** + **@emotion/** + **@mui/material-nextjs** | Drawers, dialogs, forms, layout; `AppRouterCacheProvider` avoids SSR style mismatches |
-| **leaflet** + **react-leaflet** | Map (OSM tiles, no API key) |
-| **leaflet.markercluster** + **react-leaflet-cluster** | Cluster ~10k markers (wired in a later phase) |
-| **papaparse** | CSV parsing in `src/lib/parse.ts` |
-| **recharts** | Site comparison charts (later phase) |
-| **vitest** | Tests for `src/lib/**` only — no DOM, no Next.js test runner |
+| **leaflet** + **react-leaflet**                              | Map (OSM tiles, no API key)                                                           |
+| **leaflet.markercluster** + **react-leaflet-cluster**        | Cluster ~10k markers (wired in a later phase)                                         |
+| **papaparse**                                                | CSV parsing in `src/lib/parse.ts`                                                     |
+| **recharts**                                                 | Site comparison charts (later phase)                                                  |
+| **vitest**                                                   | Tests for `src/lib/**` only — no DOM, no Next.js test runner                          |
 
 ### Why Next.js over Vite
 
@@ -48,14 +48,14 @@ data/pv_sites_sample.csv
 
 ### Logic vs view
 
-| Location | Responsibility |
-|---|---|
-| `src/lib/` | Pure functions — parse, normalize, derived (confidence/flags). **No React/MUI/Leaflet imports.** |
-| `src/types/` | `CleanSite`, `RawCsvRow`, form types |
-| `src/data/fleet.ts` | Single fetch abstraction; swap implementation for v2 API/DB |
-| `src/hooks/useFleet.ts` | Client state orchestration |
-| `src/components/` | Render pre-cleaned `CleanSite` objects; explicit `"—"` for nulls (as features land) |
-| `src/app/api/` | Thin server glue — read file, call lib, return JSON |
+| Location                | Responsibility                                                                                   |
+| ----------------------- | ------------------------------------------------------------------------------------------------ |
+| `src/lib/`              | Pure functions — parse, normalize, derived (confidence/flags). **No React/MUI/Leaflet imports.** |
+| `src/types/`            | `CleanSite`, `RawCsvRow`, form types                                                             |
+| `src/data/fleet.ts`     | Single fetch abstraction; swap implementation for v2 API/DB                                      |
+| `src/hooks/useFleet.ts` | Client state orchestration                                                                       |
+| `src/components/`       | Render pre-cleaned `CleanSite` objects; explicit `"—"` for nulls (as features land)              |
+| `src/app/api/`          | Thin server glue — read file, call lib, return JSON                                              |
 
 Normalization and derived values run **once** on the server before data reaches the UI. Components should not re-interpret sentinels (`-1`, `-9999`) or recompute confidence.
 

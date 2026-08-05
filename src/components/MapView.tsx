@@ -55,10 +55,7 @@ export default function MapView({ sites }: MapViewProps) {
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        setUserLocation([
-          position.coords.latitude,
-          position.coords.longitude,
-        ]);
+        setUserLocation([position.coords.latitude, position.coords.longitude]);
       },
       () => {
         // Permission denied or unavailable — keep US fallback

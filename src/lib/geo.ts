@@ -11,10 +11,7 @@ function toRadians(degrees: number): number {
   return (degrees * Math.PI) / 180;
 }
 
-export function haversineDistanceMiles(
-  from: LatLng,
-  to: LatLng,
-): number {
+export function haversineDistanceMiles(from: LatLng, to: LatLng): number {
   const dLat = toRadians(to.lat - from.lat);
   const dLng = toRadians(to.lng - from.lng);
   const fromLat = toRadians(from.lat);
@@ -35,8 +32,6 @@ export function filterSitesWithinRadius(
   return sites.filter((site) => {
     if (!site.coordinates) return false;
 
-    return (
-      haversineDistanceMiles(origin, site.coordinates) <= radiusMiles
-    );
+    return haversineDistanceMiles(origin, site.coordinates) <= radiusMiles;
   });
 }

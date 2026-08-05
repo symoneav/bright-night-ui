@@ -18,7 +18,8 @@ export function computeConfidence(site: DerivedInput): number {
   if (site.systemSizeKw !== null) score += CONFIDENCE_WEIGHTS.systemSizeKw;
   if (site.azimuthDeg !== null) score += CONFIDENCE_WEIGHTS.azimuthDeg;
   if (site.tiltDeg !== null) score += CONFIDENCE_WEIGHTS.tiltDeg;
-  if (site.installationDate !== null) score += CONFIDENCE_WEIGHTS.installationDate;
+  if (site.installationDate !== null)
+    score += CONFIDENCE_WEIGHTS.installationDate;
   if (site.tracking !== null) score += CONFIDENCE_WEIGHTS.tracking;
 
   return score;
