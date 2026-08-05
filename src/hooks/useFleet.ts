@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
-import { loadFleet } from "@/data/fleet";
-import type { CleanSite } from "@/types/site";
+import { addSiteToFleet, loadFleet } from "@/data/fleet";
+import type { CleanSite, SiteFormInput } from "@/types/site";
 
 type FleetState = {
   sites: CleanSite[];
@@ -31,11 +31,13 @@ export function useFleet() {
     }
   }, []);
 
-  const addSite = useCallback((site: CleanSite) => {
+  const addSite = useCallback(async (input: SiteFormInput) => {
+    const site = await addSiteToFleet(input);
     setState((prev) => ({
       ...prev,
       sites: [...prev.sites, site],
     }));
+    return site;
   }, []);
 
   useEffect(() => {

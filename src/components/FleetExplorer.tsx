@@ -7,7 +7,6 @@ import Typography from "@mui/material/Typography";
 import dynamic from "next/dynamic";
 import { useState } from "react";
 import { useFleet } from "@/hooks/useFleet";
-import { normalizeSiteFormInput } from "@/lib/normalize";
 import type { CleanSite, SiteFormInput } from "@/types/site";
 import { PVFleetExplorerHeader } from "./PVFleetExplorerHeader/pv-fleet-explorer-header";
 
@@ -17,21 +16,29 @@ export const FleetExplorer = () => {
   const { sites, loading, error, addSite } = useFleet();
   const [focusedSite, setFocusedSite] = useState<CleanSite | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [addSiteError, setAddSiteError] = useState<string | null>(null);
 
   const mappableCount = sites.filter(
     (site) => site.coordinates !== null,
   ).length;
   const missingCoordCount = sites.length - mappableCount;
 
-  const handleAddSite = (input: SiteFormInput) => {
-    const site = normalizeSiteFormInput(input);
-    addSite(site);
-    setFocusedSite(site);
-    setSuccessMessage(
-      site.coordinates
-        ? `Successfully added ${site.systemId}. Map centered on the new site.`
-        : `Successfully added ${site.systemId}. Coordinates missing, so it was not placed on the map.`,
-    );
+  const handleAddSite = async (input: SiteFormInput) => {
+    setAddSiteError(null);
+
+    try {
+      const site = await addSite(input);
+      setFocusedSite(site);
+      setSuccessMessage(
+        site.coordinates
+          ? `Successfully added ${site.systemId}. Map centered on the new site.`
+          : `Successfully added ${site.systemId}. Coordinates missing, so it was not placed on the map.`,
+      );
+    } catch (error) {
+      setAddSiteError(
+        error instanceof Error ? error.message : "Failed to add site",
+      );
+    }
   };
 
   return (
@@ -48,6 +55,12 @@ export const FleetExplorer = () => {
       {successMessage && (
         <Alert severity="success" onClose={() => setSuccessMessage(null)}>
           {successMessage}
+        </Alert>
+      )}
+
+      {addSiteError && (
+        <Alert severity="error" onClose={() => setAddSiteError(null)}>
+          {addSiteError}
         </Alert>
       )}
 
@@ -79,4 +92,4 @@ export const FleetExplorer = () => {
       )}
     </Box>
   );
-}
+};
