@@ -75,4 +75,26 @@ describe("validateSiteForm", () => {
       message: "Installation date cannot be in the future.",
     });
   });
+
+  it("rejects invalid state codes", () => {
+    const errors = fieldErrorsByField(
+      validateSiteForm({ ...validInput, state: "California" }),
+    );
+
+    expect(errors.state).toBe("Enter a valid 2-letter state code.");
+    expect(isSiteFormValid({ ...validInput, state: "California" })).toBe(
+      false,
+    );
+  });
+
+  it("rejects invalid zip codes", () => {
+    const errors = fieldErrorsByField(
+      validateSiteForm({ ...validInput, zipCode: "abcde" }),
+    );
+
+    expect(errors.zipCode).toBe(
+      "Enter a valid US zip code (e.g. 90210 or 90210-1234).",
+    );
+    expect(isSiteFormValid({ ...validInput, zipCode: "abcde" })).toBe(false);
+  });
 });
