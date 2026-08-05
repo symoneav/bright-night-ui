@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { NearbySiteMarkers } from "../near-by-site-markers";
 import { mockSite } from "@/test/mock-site";
@@ -10,10 +10,11 @@ describe("NearbySiteMarkers", () => {
     expect(container).toBeEmptyDOMElement();
   });
 
-  it("renders site details in a marker popup", () => {
-    render(<NearbySiteMarkers sites={[mockSite]} />);
+  it("excludes the focused site from the cluster", () => {
+    const { container } = render(
+      <NearbySiteMarkers sites={[mockSite]} excludeSystemId={mockSite.systemId} />,
+    );
 
-    expect(screen.getByTestId("leaflet-popup")).toBeInTheDocument();
-    expect(screen.getByText("SITE_00001")).toBeInTheDocument();
+    expect(container).toBeEmptyDOMElement();
   });
 });

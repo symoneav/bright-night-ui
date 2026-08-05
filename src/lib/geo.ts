@@ -1,6 +1,5 @@
+import { EARTH_RADIUS_MILES } from "@/lib/constants";
 import type { CleanSite } from "@/types/site";
-
-const EARTH_RADIUS_MILES = 3958.8;
 
 export type LatLng = {
   lat: number;

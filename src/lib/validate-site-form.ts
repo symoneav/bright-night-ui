@@ -1,10 +1,11 @@
+import {
+  MAX_SYSTEM_SIZE_KW,
+  US_LAT_MAX,
+  US_LAT_MIN,
+  US_LNG_MAX,
+  US_LNG_MIN,
+} from "@/lib/constants";
 import type { FieldError, SiteFormInput } from "@/types/site";
-
-const MAX_SYSTEM_SIZE_KW = 10_000;
-const US_LAT_MIN = 24;
-const US_LAT_MAX = 50;
-const US_LNG_MIN = -125;
-const US_LNG_MAX = -66;
 
 function isBlank(value: string): boolean {
   return value.trim() === "";

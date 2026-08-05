@@ -1,12 +1,10 @@
 import { computeConfidence, computeFlags } from "@/lib/derived";
+import {
+  COORD_SENTINEL,
+  isWithinUsBounds,
+  MAX_SYSTEM_SIZE_KW,
+} from "@/lib/constants";
 import type { CleanSite, RawCsvRow, SiteFormInput } from "@/types/site";
-
-const MAX_SYSTEM_SIZE_KW = 10_000;
-const COORD_SENTINEL = -9999;
-const US_LAT_MIN = 24;
-const US_LAT_MAX = 50;
-const US_LNG_MIN = -125;
-const US_LNG_MAX = -66;
 
 function isSentinel(value: string): boolean {
   const trimmed = value.trim();
@@ -83,10 +81,7 @@ function parseCoordinates(
     lng === null ||
     lat === COORD_SENTINEL ||
     lng === COORD_SENTINEL ||
-    lat < US_LAT_MIN ||
-    lat > US_LAT_MAX ||
-    lng < US_LNG_MIN ||
-    lng > US_LNG_MAX
+    !isWithinUsBounds(lat, lng)
   ) {
     return null;
   }

@@ -4,6 +4,12 @@ import Typography from "@mui/material/Typography";
 import L from "leaflet";
 import { MapContainer, TileLayer } from "react-leaflet";
 import { filterSitesWithinRadius } from "@/lib/geo";
+import {
+  DEFAULT_MAP_ZOOM,
+  NEARBY_RADIUS_MILES,
+  US_MAP_CENTER,
+  USER_LOCATION_ZOOM,
+} from "@/lib/constants";
 import type { CleanSite } from "@/types/site";
 import { NearbySiteMarkers } from "./NearBySiteMarkers";
 import { CenterMarker } from "./CenterMarker";
@@ -22,11 +28,6 @@ L.Icon.Default.mergeOptions({
   shadowUrl:
     "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
 });
-
-const US_CENTER: [number, number] = [39.8283, -98.5795];
-const DEFAULT_ZOOM = 4;
-const USER_ZOOM = 10;
-const NEARBY_RADIUS_MILES = 100;
 
 type MapViewProps = {
   sites: CleanSite[];
@@ -78,8 +79,8 @@ export default function MapView({ sites, focusedSite = null }: MapViewProps) {
   return (
     <Box sx={{ width: "100%", height: "100%", position: "relative" }}>
       <MapContainer
-        center={US_CENTER}
-        zoom={DEFAULT_ZOOM}
+        center={US_MAP_CENTER}
+        zoom={DEFAULT_MAP_ZOOM}
         style={{ width: "100%", height: "100%" }}
         scrollWheelZoom
       >
@@ -87,9 +88,9 @@ export default function MapView({ sites, focusedSite = null }: MapViewProps) {
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        <InitialLocationSync location={userLocation} zoom={USER_ZOOM} />
+        <InitialLocationSync location={userLocation} zoom={USER_LOCATION_ZOOM} />
         {userLocation && (
-          <MapRecenterButton center={userLocation} zoom={USER_ZOOM} />
+          <MapRecenterButton center={userLocation} zoom={USER_LOCATION_ZOOM} />
         )}
         <CenterMarker position={userLocation} />
         <NearbySiteMarkers

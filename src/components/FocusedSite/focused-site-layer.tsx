@@ -1,18 +1,11 @@
 import { useEffect, useRef } from "react";
 import L from "leaflet";
-import { Marker, Popup, useMap } from "react-leaflet";
-import { SiteDetailContent } from "@/components/SiteDetail";
+import { useMap } from "react-leaflet";
+import { SiteMapMarker } from "@/components/SiteDetail";
+import { FOCUS_SITE_ZOOM } from "@/lib/constants";
+import { focusedSiteMarkerIcon } from "@/lib/marker-icons";
 import type { CleanSite } from "@/types/site";
 import { flyToLocation } from "@/utils/fly-to-location";
-
-const FOCUS_ZOOM = 12;
-
-const focusedSiteIcon = L.divIcon({
-  className: "site-marker-icon",
-  html: '<div class="site-marker-icon__dot site-marker-icon__dot--focused"></div>',
-  iconSize: [16, 16],
-  iconAnchor: [8, 8],
-});
 
 type FocusedSiteLayerProps = {
   site: CleanSite;
@@ -26,7 +19,7 @@ export function FocusedSiteLayer({ site }: FocusedSiteLayerProps) {
     if (!site.coordinates) return;
 
     const { lat, lng } = site.coordinates;
-    flyToLocation(map, [lat, lng], FOCUS_ZOOM);
+    flyToLocation(map, [lat, lng], FOCUS_SITE_ZOOM);
 
     const openTimer = window.setTimeout(() => {
       markerRef.current?.openPopup();
@@ -35,22 +28,12 @@ export function FocusedSiteLayer({ site }: FocusedSiteLayerProps) {
     return () => window.clearTimeout(openTimer);
   }, [map, site]);
 
-  if (!site.coordinates) return null;
-
   return (
-    <Marker
-      ref={markerRef}
-      position={[site.coordinates.lat, site.coordinates.lng]}
-      icon={focusedSiteIcon}
-      eventHandlers={{
-        add: (event) => {
-          event.target.openPopup();
-        },
-      }}
-    >
-      <Popup minWidth={240}>
-        <SiteDetailContent site={site} />
-      </Popup>
-    </Marker>
+    <SiteMapMarker
+      site={site}
+      icon={focusedSiteMarkerIcon}
+      markerRef={markerRef}
+      onMarkerAdd={(marker) => marker.openPopup()}
+    />
   );
 }
