@@ -13,7 +13,7 @@ import { PVFleetExplorerHeader } from "./PVFleetExplorerHeader/pv-fleet-explorer
 
 const MapView = dynamic(() => import("@/components/MapView"), { ssr: false });
 
-export default function FleetExplorer() {
+export const FleetExplorer = () => {
   const { sites, loading, error, addSite } = useFleet();
   const [focusedSite, setFocusedSite] = useState<CleanSite | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
