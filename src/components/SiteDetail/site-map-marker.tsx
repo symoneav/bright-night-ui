@@ -1,12 +1,15 @@
+"use client";
+
 import type { Ref } from "react";
 import L from "leaflet";
 import { Marker, Popup } from "react-leaflet";
 import type { CleanSite } from "@/types/site";
-import { SiteDetailContent } from "./site-detail-content";
+import { SiteDetailPopup } from "./site-detail-popup";
 
 type SiteMapMarkerProps = {
   site: CleanSite;
   icon: L.DivIcon;
+  onExpand: (site: CleanSite) => void;
   markerRef?: Ref<L.Marker>;
   onMarkerAdd?: (marker: L.Marker) => void;
 };
@@ -14,6 +17,7 @@ type SiteMapMarkerProps = {
 export function SiteMapMarker({
   site,
   icon,
+  onExpand,
   markerRef,
   onMarkerAdd,
 }: SiteMapMarkerProps) {
@@ -34,8 +38,8 @@ export function SiteMapMarker({
           : undefined
       }
     >
-      <Popup minWidth={240}>
-        <SiteDetailContent site={site} />
+      <Popup minWidth={220} maxHeight={220}>
+        <SiteDetailPopup site={site} onExpand={onExpand} />
       </Popup>
     </Marker>
   );

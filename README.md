@@ -21,7 +21,7 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
-Allow browser location access to see nearby sites (100 mi radius). Click a marker to open a popup with site details. Use **Add site** in the header to add a new installation.
+Allow browser location access to see nearby sites (100 mi radius). Click a marker for a compact popup, then use the expand icon to open the full detail drawer. Use **Add site** in the header to add a new installation.
 
 ## Tests
 

@@ -16,6 +16,7 @@ import { CenterMarker } from "./CenterMarker";
 import { FocusedSiteLayer } from "./FocusedSite";
 import { InitialLocationSync } from "@/utils/initial-location-sync";
 import { MapRecenterButton } from "./RecenterButton";
+import styles from "@/styles/map-view.module.scss";
 
 // Fix default marker icons broken by bundlers
 delete (L.Icon.Default.prototype as unknown as { _getIconUrl?: unknown })
@@ -32,9 +33,14 @@ L.Icon.Default.mergeOptions({
 type MapViewProps = {
   sites: CleanSite[];
   focusedSite?: CleanSite | null;
+  onSiteExpand: (site: CleanSite) => void;
 };
 
-export default function MapView({ sites, focusedSite = null }: MapViewProps) {
+export default function MapView({
+  sites,
+  focusedSite = null,
+  onSiteExpand,
+}: MapViewProps) {
   const [userLocation, setUserLocation] = useState<[number, number] | null>(
     null,
   );
@@ -77,11 +83,11 @@ export default function MapView({ sites, focusedSite = null }: MapViewProps) {
   }, []);
 
   return (
-    <Box sx={{ width: "100%", height: "100%", position: "relative" }}>
+    <Box className={styles.root}>
       <MapContainer
         center={US_MAP_CENTER}
         zoom={DEFAULT_MAP_ZOOM}
-        style={{ width: "100%", height: "100%" }}
+        className={styles.map}
         scrollWheelZoom
       >
         <TileLayer
@@ -96,22 +102,13 @@ export default function MapView({ sites, focusedSite = null }: MapViewProps) {
         <NearbySiteMarkers
           sites={nearbySites}
           excludeSystemId={focusedSite?.systemId}
+          onSiteExpand={onSiteExpand}
         />
-        {focusedSite?.coordinates && <FocusedSiteLayer site={focusedSite} />}
+        {focusedSite?.coordinates && (
+          <FocusedSiteLayer site={focusedSite} onSiteExpand={onSiteExpand} />
+        )}
       </MapContainer>
-      <Box
-        sx={{
-          position: "absolute",
-          bottom: 16,
-          left: 16,
-          zIndex: 1000,
-          bgcolor: "background.paper",
-          px: 2,
-          py: 1,
-          borderRadius: 1,
-          boxShadow: 1,
-        }}
-      >
+      <Box className={styles.statusOverlay}>
         <Typography variant="body2" color="text.secondary">
           {userLocation
             ? `${nearbySites.length.toLocaleString()} sites within ${NEARBY_RADIUS_MILES} mi`

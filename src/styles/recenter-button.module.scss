@@ -1,0 +1,16 @@
+.wrapper {
+  position: absolute;
+  top: 96px;
+  left: 10px;
+  z-index: 1000;
+}
+
+.button {
+  background-color: var(--mui-palette-background-paper, #fff);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  border: 1px solid var(--mui-palette-divider, rgba(0, 0, 0, 0.12));
+
+  &:hover {
+    background-color: var(--mui-palette-background-paper, #fff);
+  }
+}

@@ -5,7 +5,7 @@ import { useState } from "react";
 import { isAddSiteUserError } from "@/data/fleet";
 import type { FieldError, SiteFormInput } from "@/types/site";
 import { AddSiteForm } from "./add-site-form";
-import styles from "./add-site-button.module.scss";
+import styles from "@/styles/add-site-button.module.scss";
 
 type AddSiteButtonProps = {
   existingSystemIds?: string[];
@@ -68,7 +68,7 @@ export const AddSiteButton = ({
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-        <Box className={styles.addSiteButton}>
+        <Box className={styles.modal}>
           <AddSiteForm
             open={open}
             existingSystemIds={existingSystemIds}

@@ -1,4 +1,5 @@
 import type { CleanSite } from "@/types/site";
+import styles from "@/styles/site-detail-content.module.scss";
 
 function formatValue(value: string | number | boolean | null): string {
   if (value === null || value === "") return "—";
@@ -21,12 +22,16 @@ function DetailRow({ label, value }: DetailRowProps) {
 
 type SiteDetailContentProps = {
   site: CleanSite;
+  showTitle?: boolean;
 };
 
-export function SiteDetailContent({ site }: SiteDetailContentProps) {
+export function SiteDetailContent({
+  site,
+  showTitle = true,
+}: SiteDetailContentProps) {
   return (
-    <div style={{ minWidth: 220, fontSize: 13, lineHeight: 1.5 }}>
-      <strong style={{ fontSize: 15 }}>{site.systemId}</strong>
+    <div className={styles.content}>
+      {showTitle && <strong className={styles.title}>{site.systemId}</strong>}
       <DetailRow label="State" value={site.state} />
       <DetailRow label="Zip" value={site.zipCode} />
       <DetailRow
@@ -61,9 +66,9 @@ export function SiteDetailContent({ site }: SiteDetailContentProps) {
       <DetailRow label="Ground mounted" value={site.groundMounted} />
       <DetailRow label="Confidence" value={`${site.confidence}%`} />
       {site.flags.length > 0 && (
-        <div style={{ marginTop: 8 }}>
+        <div className={styles.flags}>
           <strong>Flags:</strong>
-          <ul style={{ margin: "4px 0 0", paddingLeft: 18 }}>
+          <ul className={styles.flagList}>
             {site.flags.map((flag) => (
               <li key={flag}>{flag}</li>
             ))}

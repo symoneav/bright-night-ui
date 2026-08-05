@@ -1,4 +1,4 @@
-import { SiteMapMarker } from "@/components/SiteDetail";
+import { SiteMapMarker } from "@/components/SiteDetail/site-map-marker";
 import { defaultSiteMarkerIcon } from "@/lib/marker-icons";
 import { CleanSite } from "@/types/site";
 import MarkerClusterGroup from "react-leaflet-cluster";
@@ -6,9 +6,11 @@ import MarkerClusterGroup from "react-leaflet-cluster";
 export const NearbySiteMarkers = ({
   sites,
   excludeSystemId,
+  onSiteExpand,
 }: {
   sites: CleanSite[];
   excludeSystemId?: string;
+  onSiteExpand: (site: CleanSite) => void;
 }) => {
   const visibleSites = (excludeSystemId
     ? sites.filter((site) => site.systemId !== excludeSystemId)
@@ -24,6 +26,7 @@ export const NearbySiteMarkers = ({
           key={site.systemId}
           site={site}
           icon={defaultSiteMarkerIcon}
+          onExpand={onSiteExpand}
         />
       ))}
     </MarkerClusterGroup>

@@ -1,0 +1,23 @@
+.panel {
+  width: 100vw;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  @media (min-width: 600px) {
+    width: 360px;
+  }
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.closeButton {
+  min-width: 0;
+  padding-left: 8px;
+  padding-right: 8px;
+}

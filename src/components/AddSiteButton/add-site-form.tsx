@@ -11,6 +11,7 @@ import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import { SubmitEvent, useEffect, useState } from "react";
 import { fieldErrorsByField, validateSiteForm } from "@/lib/validate-site-form";
+import styles from "@/styles/add-site-form.module.scss";
 import {
   EMPTY_SITE_FORM_INPUT,
   type FieldError,
@@ -91,13 +92,13 @@ export function AddSiteForm({
         id="modal-modal-title"
         variant="h6"
         component="h2"
-        sx={{ mb: 2 }}
+        className={styles.title}
       >
         Add New PV Site
       </Typography>
 
       {formError && (
-        <Alert severity="error" sx={{ mb: 2 }}>
+        <Alert severity="error" className={styles.formError}>
           {formError}
         </Alert>
       )}
@@ -106,15 +107,7 @@ export function AddSiteForm({
         component="fieldset"
         disabled={isSubmitting}
         spacing={2}
-        sx={{
-          maxHeight: "70vh",
-          overflowY: "auto",
-          pr: 0.5,
-          border: 0,
-          m: 0,
-          p: 0,
-          minWidth: 0,
-        }}
+        className={styles.fields}
       >
         <TextField
           name="systemId"
@@ -129,7 +122,7 @@ export function AddSiteForm({
           size="small"
         />
 
-        <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}>
+        <Box className={styles.fieldRow}>
           <TextField
             name="state"
             label="State"
@@ -157,7 +150,7 @@ export function AddSiteForm({
           />
         </Box>
 
-        <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}>
+        <Box className={styles.fieldRow}>
           <TextField
             name="lat"
             label="Latitude"
@@ -186,7 +179,7 @@ export function AddSiteForm({
           />
         </Box>
 
-        <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}>
+        <Box className={styles.fieldRow}>
           <TextField
             name="systemSizeKw"
             label="System size (kW)"
@@ -213,7 +206,7 @@ export function AddSiteForm({
           />
         </Box>
 
-        <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}>
+        <Box className={styles.fieldRow}>
           <TextField
             name="azimuthDeg"
             label="Azimuth (°)"
@@ -240,7 +233,7 @@ export function AddSiteForm({
           />
         </Box>
 
-        <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}>
+        <Box className={styles.fieldRow}>
           <TextField
             name="moduleQuantity"
             label="Module quantity"
@@ -267,9 +260,7 @@ export function AddSiteForm({
           />
         </Box>
 
-        <Box
-          sx={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 2 }}
-        >
+        <Box className={styles.fieldRowThree}>
           <BooleanFieldInput
             label="Tracking"
             value={values.tracking}
@@ -292,7 +283,7 @@ export function AddSiteForm({
         direction="row"
         spacing={1}
         justifyContent="flex-end"
-        sx={{ mt: 3 }}
+        className={styles.actions}
       >
         <Button
           type="button"

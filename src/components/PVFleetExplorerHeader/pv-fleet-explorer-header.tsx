@@ -2,7 +2,7 @@ import type { CleanSite, SiteFormInput } from "@/types/site";
 import { Typography } from "@mui/material";
 import Box from "@mui/material/Box";
 import { AddSiteButton } from "../AddSiteButton/add-site-button";
-import styles from "./pv-fleet-explorer-header.module.scss";
+import styles from "@/styles/pv-fleet-explorer-header.module.scss";
 
 export type PVFleetExplorerHeaderProps = {
   loading: boolean;
@@ -22,23 +22,17 @@ export const PVFleetExplorerHeader = ({
   onAddSite,
 }: PVFleetExplorerHeaderProps) => {
   return (
-    <Box
-      className={styles.pvFleetExplorerHeader}
-      component="header"
-      sx={{
-        px: 2,
-        py: 1.5,
-        borderBottom: 1,
-        borderColor: "divider",
-        bgcolor: "background.paper",
-      }}
-    >
+    <Box className={styles.header} component="header">
       <div>
         <Typography variant="h6" component="h1">
           PV Fleet Explorer
         </Typography>
         {!loading && !error && sites.length > 0 && (
-          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            className={styles.subtitle}
+          >
             {sites.length.toLocaleString()} sites loaded (
             {mappableCount.toLocaleString()} on map
             {missingCoordCount > 0

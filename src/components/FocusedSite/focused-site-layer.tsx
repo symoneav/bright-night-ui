@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import L from "leaflet";
 import { useMap } from "react-leaflet";
-import { SiteMapMarker } from "@/components/SiteDetail";
+import { SiteMapMarker } from "@/components/SiteDetail/site-map-marker";
 import { FOCUS_SITE_ZOOM } from "@/lib/constants";
 import { focusedSiteMarkerIcon } from "@/lib/marker-icons";
 import type { CleanSite } from "@/types/site";
@@ -9,9 +9,13 @@ import { flyToLocation } from "@/utils/fly-to-location";
 
 type FocusedSiteLayerProps = {
   site: CleanSite;
+  onSiteExpand: (site: CleanSite) => void;
 };
 
-export function FocusedSiteLayer({ site }: FocusedSiteLayerProps) {
+export function FocusedSiteLayer({
+  site,
+  onSiteExpand,
+}: FocusedSiteLayerProps) {
   const map = useMap();
   const markerRef = useRef<L.Marker>(null);
 
@@ -32,6 +36,7 @@ export function FocusedSiteLayer({ site }: FocusedSiteLayerProps) {
     <SiteMapMarker
       site={site}
       icon={focusedSiteMarkerIcon}
+      onExpand={onSiteExpand}
       markerRef={markerRef}
       onMarkerAdd={(marker) => marker.openPopup()}
     />

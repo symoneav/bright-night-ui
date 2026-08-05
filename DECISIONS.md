@@ -98,9 +98,9 @@ Form validation lives in `src/lib/validate-site-form.ts` as pure functions, call
 | Feature | Status |
 | --- | --- |
 | Map + nearby sites | Done — location-based radius filter, clustering, focused-site highlight |
-| Marker detail | Done — Leaflet popup with `SiteDetailContent` |
+| Marker detail | Done — compact Leaflet popup; expand icon opens drawer with full `SiteDetailContent` |
 | Add site | Done — modal form; client + server validation; persists to CSV; focuses new site on map |
-| Detail drawer | Not done — popup only; drawer + expand icon planned |
+| Detail drawer | Done — MUI drawer with full site fields |
 | Compare chart | Not done — `compare-sites.ts` logic + tests exist; Recharts panel not wired |
 | Empty states | Partial — location prompt overlay; no dedicated zero-fleet / zero-nearby panels |
 
@@ -124,15 +124,14 @@ Form validation lives in `src/lib/validate-site-form.ts` as pure functions, call
 
 ## Remaining work (timebox order)
 
-1. Detail drawer — expand from popup for full-screen detail view
-2. Compare chart UI — wire `buildComparisonChartData()` to Recharts (2–5 sites)
-3. Empty states — zero fleet, location denied, no nearby sites within radius
+1. Compare chart UI — wire `buildComparisonChartData()` to Recharts (2–5 sites)
+2. Empty states — zero fleet, location denied, no nearby sites within radius
 
 ---
 
 ## Top three next steps
 
-1. **Detail drawer + compare UX** — finish drawer, comparison checkbox, and chart panel.
+1. **Compare UX** — comparison checkbox in drawer and Recharts chart panel.
 2. **Server-side geo query** — push radius filter into the API/DB instead of shipping all sites to the client.
 3. **Auth + real persistence** — replace CSV append with a database and authenticated writes.
 

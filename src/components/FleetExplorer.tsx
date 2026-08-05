@@ -12,15 +12,22 @@ import {
   isAddSiteUserError,
 } from "@/data/fleet";
 import type { CleanSite, SiteFormInput } from "@/types/site";
+import { SiteDetailDrawer } from "./SiteDetail/site-detail-drawer";
 import { PVFleetExplorerHeader } from "./PVFleetExplorerHeader/pv-fleet-explorer-header";
+import styles from "@/styles/fleet-explorer.module.scss";
 
 const MapView = dynamic(() => import("@/components/MapView"), { ssr: false });
 
 export const FleetExplorer = () => {
   const { sites, loading, error, addSite } = useFleet();
   const [focusedSite, setFocusedSite] = useState<CleanSite | null>(null);
+  const [selectedSite, setSelectedSite] = useState<CleanSite | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [addSiteError, setAddSiteError] = useState<string | null>(null);
+
+  const handleSiteExpand = (site: CleanSite) => {
+    setSelectedSite(site);
+  };
 
   const mappableCount = sites.filter(
     (site) => site.coordinates !== null,
@@ -50,7 +57,7 @@ export const FleetExplorer = () => {
   };
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", height: "100vh" }}>
+    <Box className={styles.root}>
       <PVFleetExplorerHeader
         loading={loading}
         error={error}
@@ -83,31 +90,32 @@ export const FleetExplorer = () => {
       )}
 
       {loading && (
-        <Box
-          sx={{
-            flex: 1,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: 2,
-          }}
-        >
+        <Box className={styles.loading}>
           <CircularProgress size={32} />
           <Typography color="text.secondary">Loading fleet data…</Typography>
         </Box>
       )}
 
       {error && (
-        <Box sx={{ p: 2 }}>
+        <Box className={styles.error}>
           <Alert severity="error">{error}</Alert>
         </Box>
       )}
 
       {!loading && !error && (
-        <Box sx={{ flex: 1, position: "relative" }}>
-          <MapView sites={sites} focusedSite={focusedSite} />
+        <Box className={styles.mapContainer}>
+          <MapView
+            sites={sites}
+            focusedSite={focusedSite}
+            onSiteExpand={handleSiteExpand}
+          />
         </Box>
       )}
+
+      <SiteDetailDrawer
+        site={selectedSite}
+        onClose={() => setSelectedSite(null)}
+      />
     </Box>
   );
 };
