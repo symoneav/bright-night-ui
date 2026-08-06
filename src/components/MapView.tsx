@@ -44,12 +44,15 @@ export default function MapView({
   const [userLocation, setUserLocation] = useState<[number, number] | null>(
     null,
   );
+  const [filterCenter, setFilterCenter] = useState<[number, number] | null>(
+    null,
+  );
 
   const nearbySites = useMemo(() => {
-    const radiusSites = userLocation
+    const radiusSites = filterCenter
       ? filterSitesWithinRadius(
           sites,
-          { lat: userLocation[0], lng: userLocation[1] },
+          { lat: filterCenter[0], lng: filterCenter[1] },
           NEARBY_RADIUS_MILES,
         )
       : [];
@@ -62,7 +65,7 @@ export default function MapView({
     }
 
     return radiusSites;
-  }, [sites, userLocation, focusedSite]);
+  }, [sites, filterCenter, focusedSite]);
 
   useEffect(() => {
     window.dispatchEvent(new Event("resize"));
@@ -73,7 +76,12 @@ export default function MapView({
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        setUserLocation([position.coords.latitude, position.coords.longitude]);
+        const coords: [number, number] = [
+          position.coords.latitude,
+          position.coords.longitude,
+        ];
+        setUserLocation(coords);
+        setFilterCenter(coords);
       },
       () => {
         // Permission denied or unavailable — keep US fallback
@@ -81,6 +89,11 @@ export default function MapView({
       { enableHighAccuracy: false, timeout: 10_000, maximumAge: 60_000 },
     );
   }, []);
+
+  const handleRecenterToUser = () => {
+    if (!userLocation) return;
+    setFilterCenter(userLocation);
+  };
 
   return (
     <Box className={styles.root}>
@@ -96,9 +109,16 @@ export default function MapView({
         />
         <InitialLocationSync location={userLocation} zoom={USER_LOCATION_ZOOM} />
         {userLocation && (
-          <MapRecenterButton center={userLocation} zoom={USER_LOCATION_ZOOM} />
+          <MapRecenterButton
+            center={userLocation}
+            zoom={USER_LOCATION_ZOOM}
+            onRecenter={handleRecenterToUser}
+          />
         )}
-        <CenterMarker position={userLocation} />
+        <CenterMarker
+          position={filterCenter}
+          onPositionChange={setFilterCenter}
+        />
         <NearbySiteMarkers
           sites={nearbySites}
           excludeSystemId={focusedSite?.systemId}
@@ -110,11 +130,16 @@ export default function MapView({
       </MapContainer>
       <Box className={styles.statusOverlay}>
         <Typography variant="body2" color="text.secondary">
-          {userLocation
-            ? `${nearbySites.length.toLocaleString()} sites within ${NEARBY_RADIUS_MILES} mi`
+          {filterCenter
+            ? `${nearbySites.length.toLocaleString()} sites within ${NEARBY_RADIUS_MILES} mi of pin`
             : "Allow location access to see nearby sites"}
         </Typography>
+        {filterCenter && (
+          <Typography variant="caption" color="text.secondary">
+            Drag the pin to search another area
+          </Typography>
+        )}
       </Box>
     </Box>
   );
-}
+};

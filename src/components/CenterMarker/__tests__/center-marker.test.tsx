@@ -9,8 +9,8 @@ describe("CenterMarker", () => {
     expect(container).toBeEmptyDOMElement();
   });
 
-  it("renders a marker when a position is provided", () => {
-    render(<CenterMarker position={[34.05, -118.25]} />);
+  it("renders a draggable marker when onPositionChange is provided", () => {
+    render(<CenterMarker position={[34.05, -118.25]} onPositionChange={() => undefined} />);
 
     expect(screen.getByTestId("leaflet-marker")).toBeInTheDocument();
   });

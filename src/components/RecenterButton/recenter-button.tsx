@@ -28,14 +28,24 @@ const RecenterButton = ({ onRecenter }: RecenterButtonProps) => {
 type MapRecenterButtonProps = {
   center: [number, number];
   zoom: number;
+  onRecenter?: () => void;
 };
 
-export const MapRecenterButton = ({ center, zoom }: MapRecenterButtonProps) => {
+export const MapRecenterButton = ({
+  center,
+  zoom,
+  onRecenter,
+}: MapRecenterButtonProps) => {
   const map = useMap();
 
   return (
     <Box className={styles.wrapper}>
-      <RecenterButton onRecenter={() => flyToLocation(map, center, zoom)} />
+      <RecenterButton
+        onRecenter={() => {
+          onRecenter?.();
+          flyToLocation(map, center, zoom);
+        }}
+      />
     </Box>
   );
 };
