@@ -2,6 +2,7 @@
  * @vitest-environment node
  */
 import { describe, expect, it } from "vitest";
+import { isFutureIsoDateOnly } from "@/lib/date-only";
 import { EMPTY_SITE_FORM_INPUT } from "@/types/site";
 import {
   fieldErrorsByField,
@@ -77,6 +78,23 @@ describe("validateSiteForm", () => {
       field: "installationDate",
       message: "Installation date cannot be in the future.",
     });
+  });
+
+  it("accepts today's installation date", () => {
+    const now = new Date(2026, 7, 5, 12, 0, 0);
+    const today = "2026-08-05";
+
+    expect(
+      validateSiteForm(
+        { ...validInput, installationDate: today },
+        [],
+        { futureDateGraceDays: 0 },
+      ),
+    ).toEqual([]);
+
+    expect(
+      isFutureIsoDateOnly(today, now, { graceDays: 0 }),
+    ).toBe(false);
   });
 
   it("rejects invalid state codes", () => {

@@ -21,6 +21,7 @@ describe("FleetExplorer", () => {
       error: null,
       refresh: vi.fn(),
       addSite: vi.fn(),
+      addSites: vi.fn(),
     });
 
     renderWithProviders(<FleetExplorer />);

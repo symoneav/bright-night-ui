@@ -24,3 +24,7 @@ export function getCachedSites(): CleanSite[] | null {
 export function setCachedSites(sites: CleanSite[]): void {
   cachedSites = sites;
 }
+
+export function clearCachedSites(): void {
+  cachedSites = null;
+}

@@ -1,3 +1,4 @@
+import { parseIsoDateOnly } from "@/lib/date-only";
 import type { CleanSite } from "@/types/site";
 
 type DerivedInput = Omit<CleanSite, "confidence" | "flags">;
@@ -41,8 +42,8 @@ export function computeFlags(site: DerivedInput): string[] {
   }
 
   if (site.installationDate !== null) {
-    const year = new Date(site.installationDate).getFullYear();
-    if (year < 2005) {
+    const parsed = parseIsoDateOnly(site.installationDate);
+    if (parsed && parsed.date.getFullYear() < 2005) {
       flags.push("Installed before 2005 — very old system");
     }
   }
@@ -56,7 +57,7 @@ export function computeFlags(site: DerivedInput): string[] {
   }
 
   if (site.installationDate === null) {
-    flags.push("Future or missing install date");
+    flags.push("Missing install date");
   }
 
   return flags;

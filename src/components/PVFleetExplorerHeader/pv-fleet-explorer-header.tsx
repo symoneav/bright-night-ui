@@ -11,6 +11,7 @@ export type PVFleetExplorerHeaderProps = {
   mappableCount: number;
   missingCoordCount: number;
   onAddSite: (input: SiteFormInput) => Promise<void>;
+  onBulkAddSites: (inputs: SiteFormInput[]) => Promise<void>;
 };
 
 export const PVFleetExplorerHeader = ({
@@ -20,6 +21,7 @@ export const PVFleetExplorerHeader = ({
   mappableCount,
   missingCoordCount,
   onAddSite,
+  onBulkAddSites,
 }: PVFleetExplorerHeaderProps) => {
   return (
     <Box className={styles.header} component="header">
@@ -45,6 +47,7 @@ export const PVFleetExplorerHeader = ({
       <AddSiteButton
         existingSystemIds={sites.map((site) => site.systemId)}
         onAddSite={onAddSite}
+        onBulkAddSites={onBulkAddSites}
       />
     </Box>
   );

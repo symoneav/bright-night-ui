@@ -62,3 +62,31 @@ export async function addSiteToFleet(input: SiteFormInput): Promise<CleanSite> {
 
   return body as CleanSite;
 }
+
+export async function addSitesToFleet(
+  inputs: SiteFormInput[],
+): Promise<CleanSite[]> {
+  const response = await fetch("/api/sites", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(inputs),
+  });
+
+  const body = (await response.json().catch(() => null)) as
+    | CleanSite[]
+    | { error?: string; fieldErrors?: Partial<Record<string, string>> }
+    | null;
+
+  if (!response.ok) {
+    const message =
+      body && "error" in body && body.error
+        ? body.error
+        : `Failed to add sites (${response.status})`;
+    throw new AddSiteFleetError(
+      message,
+      body && "fieldErrors" in body ? body.fieldErrors : undefined,
+    );
+  }
+
+  return body as CleanSite[];
+}

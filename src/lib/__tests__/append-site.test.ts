@@ -60,6 +60,22 @@ describe("appendSiteToCsv", () => {
     expect(rows[1]?.system_ID).toBe("SITE_99999");
   });
 
+  it("appends a row to a CRLF csv file", async () => {
+    tempDir = await mkdtemp(path.join(os.tmpdir(), "append-site-test-"));
+    const csvPath = path.join(tempDir, "sites.csv");
+    await writeFile(
+      csvPath,
+      `${CSV_HEADER}\r\n${existingRow}\r\n`,
+      "utf-8",
+    );
+
+    await appendSiteToCsv(validInput, ["SITE_00001"], csvPath);
+
+    const rows = parseCsv(await readFile(csvPath, "utf-8"));
+    expect(rows).toHaveLength(2);
+    expect(rows[1]?.system_ID).toBe("SITE_99999");
+  });
+
   it("does not write when validation fails", async () => {
     const csvPath = await createTempCsv();
 

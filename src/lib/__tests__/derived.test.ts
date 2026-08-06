@@ -91,7 +91,7 @@ describe("computeFlags", () => {
   });
 
   it("flags missing install date", () => {
-    expect(computeFlags(emptySite)).toContain("Future or missing install date");
+    expect(computeFlags(emptySite)).toContain("Missing install date");
   });
 
   it("does not flag orientation when only azimuth is present", () => {

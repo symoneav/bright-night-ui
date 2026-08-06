@@ -5,6 +5,7 @@ import {
   US_LNG_MAX,
   US_LNG_MIN,
 } from "@/lib/constants";
+import { isFutureIsoDateOnly, parseIsoDateOnly } from "@/lib/date-only";
 import type { FieldError, SiteFormInput } from "@/types/site";
 
 function isBlank(value: string): boolean {
@@ -19,6 +20,7 @@ function parseFiniteNumber(value: string): number | null {
 export function validateSiteForm(
   input: SiteFormInput,
   existingSystemIds: Iterable<string> = [],
+  options: { futureDateGraceDays?: number } = {},
 ): FieldError[] {
   const errors: FieldError[] = [];
   const existingIds = new Set(
@@ -130,21 +132,20 @@ export function validateSiteForm(
   }
 
   if (!isBlank(input.installationDate)) {
-    const date = new Date(input.installationDate.trim());
-    if (Number.isNaN(date.getTime())) {
+    if (!parseIsoDateOnly(input.installationDate)) {
       errors.push({
         field: "installationDate",
         message: "Enter a valid installation date.",
       });
-    } else {
-      const today = new Date();
-      today.setHours(23, 59, 59, 999);
-      if (date > today) {
-        errors.push({
-          field: "installationDate",
-          message: "Installation date cannot be in the future.",
-        });
-      }
+    } else if (
+      isFutureIsoDateOnly(input.installationDate, new Date(), {
+        graceDays: options.futureDateGraceDays ?? 0,
+      })
+    ) {
+      errors.push({
+        field: "installationDate",
+        message: "Installation date cannot be in the future.",
+      });
     }
   }
 
@@ -162,6 +163,7 @@ export function fieldErrorsByField(
 export function isSiteFormValid(
   input: SiteFormInput,
   existingSystemIds: Iterable<string> = [],
+  options: { futureDateGraceDays?: number } = {},
 ): boolean {
-  return validateSiteForm(input, existingSystemIds).length === 0;
+  return validateSiteForm(input, existingSystemIds, options).length === 0;
 }

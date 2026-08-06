@@ -14,6 +14,7 @@ describe("PVFleetExplorerHeader", () => {
         mappableCount={1}
         missingCoordCount={0}
         onAddSite={vi.fn(async () => undefined)}
+        onBulkAddSites={vi.fn(async () => undefined)}
       />,
     );
 

@@ -1,6 +1,7 @@
 import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
+import Chip from "@mui/material/Chip";
 import CircularProgress from "@mui/material/CircularProgress";
 import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
@@ -9,7 +10,7 @@ import Select, { SelectChangeEvent } from "@mui/material/Select";
 import Stack from "@mui/material/Stack";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import { SubmitEvent, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { fieldErrorsByField, validateSiteForm } from "@/lib/validate-site-form";
 import styles from "@/styles/add-site-form.module.scss";
 import {
@@ -18,34 +19,47 @@ import {
   type SiteFormInput,
 } from "@/types/site";
 
-type AddSiteFormProps = {
+type AddBulkSiteFormProps = {
   open: boolean;
   existingSystemIds?: string[];
   isSubmitting: boolean;
   serverFieldErrors?: Partial<Record<FieldError["field"] | "form", string>>;
   submitError?: string | null;
   onCancel: () => void;
-  onSubmit: (input: SiteFormInput) => void;
+  onBulkSubmit: (inputs: SiteFormInput[]) => void;
 };
 
-export function AddSiteForm({
+function normalizeFormInput(input: SiteFormInput): SiteFormInput {
+  return {
+    ...input,
+    systemId: input.systemId.trim(),
+    state: input.state.trim().toUpperCase(),
+    zipCode: input.zipCode.trim(),
+  };
+}
+
+export function AddBulkSiteForm({
   open,
   existingSystemIds = [],
   isSubmitting,
   serverFieldErrors = {},
   submitError = null,
   onCancel,
-  onSubmit,
-}: AddSiteFormProps) {
+  onBulkSubmit,
+}: AddBulkSiteFormProps) {
   const [values, setValues] = useState<SiteFormInput>(EMPTY_SITE_FORM_INPUT);
+  const [pendingSites, setPendingSites] = useState<SiteFormInput[]>([]);
   const [clientFieldErrors, setClientFieldErrors] = useState<
     Partial<Record<FieldError["field"], string>>
   >({});
+  const [localFormError, setLocalFormError] = useState<string | null>(null);
 
   useEffect(() => {
     if (open) {
       setValues(EMPTY_SITE_FORM_INPUT);
+      setPendingSites([]);
       setClientFieldErrors({});
+      setLocalFormError(null);
     }
   }, [open]);
 
@@ -54,6 +68,7 @@ export function AddSiteForm({
     (event: React.ChangeEvent<HTMLInputElement>) => {
       setValues((current) => ({ ...current, [field]: event.target.value }));
       setClientFieldErrors((current) => ({ ...current, [field]: undefined }));
+      setLocalFormError(null);
     };
 
   const setBooleanField =
@@ -65,42 +80,78 @@ export function AddSiteForm({
       setValues((current) => ({ ...current, [field]: value }));
     };
 
-  const handleSubmit = (event: SubmitEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const knownSystemIds = [
+    ...existingSystemIds,
+    ...pendingSites.map((site) => site.systemId),
+  ];
 
-    const errors = validateSiteForm(values, existingSystemIds);
+  const handleAddSite = () => {
+    const errors = validateSiteForm(values, knownSystemIds);
     if (errors.length > 0) {
       setClientFieldErrors(fieldErrorsByField(errors));
       return;
     }
 
+    const normalized = normalizeFormInput(values);
+    setPendingSites((current) => [...current, normalized]);
+    setValues(EMPTY_SITE_FORM_INPUT);
     setClientFieldErrors({});
-    onSubmit({
-      ...values,
-      systemId: values.systemId.trim(),
-      state: values.state.trim().toUpperCase(),
-      zipCode: values.zipCode.trim(),
-    });
+    setLocalFormError(null);
+  };
+
+  const handleSubmitSites = () => {
+    if (pendingSites.length === 0) {
+      setLocalFormError("Add at least one site before submitting.");
+      return;
+    }
+
+    setClientFieldErrors({});
+    setLocalFormError(null);
+    onBulkSubmit(pendingSites);
+  };
+
+  const handleRemovePendingSite = (systemId: string) => {
+    setPendingSites((current) =>
+      current.filter((site) => site.systemId !== systemId),
+    );
   };
 
   const fieldErrors = { ...serverFieldErrors, ...clientFieldErrors };
-  const formError = fieldErrors.form ?? submitError;
+  const formError = fieldErrors.form ?? submitError ?? localFormError;
 
   return (
-    <Box component="form" onSubmit={handleSubmit} noValidate>
+    <Box
+      component="form"
+      onSubmit={(event) => event.preventDefault()}
+      noValidate
+    >
       <Typography
         id="modal-modal-title"
         variant="h6"
         component="h2"
         className={styles.formTitle}
       >
-        Add New PV Site
+        Add New PV Sites
       </Typography>
 
       {formError && (
         <Alert severity="error" className={styles.formError}>
           {formError}
         </Alert>
+      )}
+
+      {pendingSites.length > 0 && (
+        <Stack direction="row" flexWrap="wrap" gap={1} className={styles.formError}>
+          {pendingSites.map((site) => (
+            <Chip
+              key={site.systemId}
+              label={site.systemId}
+              size="small"
+              onDelete={() => handleRemovePendingSite(site.systemId)}
+              disabled={isSubmitting}
+            />
+          ))}
+        </Stack>
       )}
 
       <Stack
@@ -134,7 +185,7 @@ export function AddSiteForm({
             required
             fullWidth
             size="small"
-            inputProps={{ maxLength: 2 }}
+            slotProps={{ htmlInput: { maxLength: 2 } }}
           />
           <TextField
             name="zipCode"
@@ -162,7 +213,7 @@ export function AddSiteForm({
             required
             fullWidth
             size="small"
-            inputProps={{ step: "any" }}
+            slotProps={{ htmlInput: { step: "any" } }}
           />
           <TextField
             name="lng"
@@ -175,7 +226,7 @@ export function AddSiteForm({
             required
             fullWidth
             size="small"
-            inputProps={{ step: "any" }}
+            slotProps={{ htmlInput: { step: "any" } }}
           />
         </Box>
 
@@ -190,7 +241,7 @@ export function AddSiteForm({
             helperText={fieldErrors.systemSizeKw}
             fullWidth
             size="small"
-            inputProps={{ min: 0, step: "any" }}
+            slotProps={{ htmlInput: { min: 0, step: "any" } }}
           />
           <TextField
             name="installationDate"
@@ -202,7 +253,7 @@ export function AddSiteForm({
             helperText={fieldErrors.installationDate}
             fullWidth
             size="small"
-            InputLabelProps={{ shrink: true }}
+            slotProps={{ inputLabel: { shrink: true } }}
           />
         </Box>
 
@@ -217,7 +268,7 @@ export function AddSiteForm({
             helperText={fieldErrors.azimuthDeg ?? "0–359, N=0"}
             fullWidth
             size="small"
-            inputProps={{ min: 0, max: 359, step: "any" }}
+            slotProps={{ htmlInput: { min: 0, max: 359, step: "any" } }}
           />
           <TextField
             name="tiltDeg"
@@ -229,7 +280,7 @@ export function AddSiteForm({
             helperText={fieldErrors.tiltDeg ?? "0–90"}
             fullWidth
             size="small"
-            inputProps={{ min: 0, max: 90, step: "any" }}
+            slotProps={{ htmlInput: { min: 0, max: 90, step: "any" } }}
           />
         </Box>
 
@@ -244,7 +295,7 @@ export function AddSiteForm({
             helperText={fieldErrors.moduleQuantity}
             fullWidth
             size="small"
-            inputProps={{ min: 1, step: 1 }}
+            slotProps={{ htmlInput: { min: 1, step: 1 } }}
           />
           <TextField
             name="efficiency"
@@ -256,7 +307,7 @@ export function AddSiteForm({
             helperText={fieldErrors.efficiency ?? "Fraction, e.g. 0.19"}
             fullWidth
             size="small"
-            inputProps={{ min: 0, max: 1, step: "any" }}
+            slotProps={{ htmlInput: { min: 0, max: 1, step: "any" } }}
           />
         </Box>
 
@@ -294,16 +345,27 @@ export function AddSiteForm({
           Cancel
         </Button>
         <Button
-          type="submit"
+          type="button"
           variant="contained"
+          onClick={handleAddSite}
           disabled={isSubmitting}
+        >
+          Add Site
+        </Button>
+        <Button
+          type="button"
+          variant="contained"
+          onClick={handleSubmitSites}
+          disabled={isSubmitting || pendingSites.length === 0}
           startIcon={
             isSubmitting ? (
               <CircularProgress size={16} color="inherit" />
             ) : undefined
           }
         >
-          {isSubmitting ? "Adding…" : "Add Site"}
+          {isSubmitting
+            ? "Adding Sites…"
+            : `Submit Sites (${pendingSites.length})`}
         </Button>
       </Stack>
     </Box>

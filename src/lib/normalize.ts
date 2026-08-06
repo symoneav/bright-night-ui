@@ -4,6 +4,7 @@ import {
   isWithinUsBounds,
   MAX_SYSTEM_SIZE_KW,
 } from "@/lib/constants";
+import { normalizeIsoDateOnly } from "@/lib/date-only";
 import type { CleanSite, RawCsvRow, SiteFormInput } from "@/types/site";
 
 function isSentinel(value: string): boolean {
@@ -58,15 +59,7 @@ function parseEfficiency(value: string): number | null {
 function parseInstallationDate(value: string): string | null {
   const trimmed = value.trim();
   if (!trimmed || isSentinel(trimmed)) return null;
-
-  const date = new Date(trimmed);
-  if (Number.isNaN(date.getTime())) return null;
-
-  const today = new Date();
-  today.setHours(23, 59, 59, 999);
-  if (date > today) return null;
-
-  return trimmed;
+  return normalizeIsoDateOnly(trimmed);
 }
 
 function parseCoordinates(

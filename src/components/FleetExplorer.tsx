@@ -19,7 +19,7 @@ import styles from "@/styles/fleet-explorer.module.scss";
 const MapView = dynamic(() => import("@/components/MapView"), { ssr: false });
 
 export const FleetExplorer = () => {
-  const { sites, loading, error, addSite } = useFleet();
+  const { sites, loading, error, addSite, addSites } = useFleet();
   const [focusedSite, setFocusedSite] = useState<CleanSite | null>(null);
   const [selectedSite, setSelectedSite] = useState<CleanSite | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -56,6 +56,27 @@ export const FleetExplorer = () => {
     }
   };
 
+  const handleBulkAddSites = async (inputs: SiteFormInput[]) => {
+    setAddSiteError(null);
+    setSuccessMessage(null);
+
+    try {
+      const addedSites = await addSites(inputs);
+      setSuccessMessage(
+        addedSites.length === 1
+          ? `Successfully added ${addedSites[0].systemId}.`
+          : `Successfully added ${addedSites.length.toLocaleString()} sites.`,
+      );
+    } catch (error) {
+      if (isAddSiteUserError(error)) {
+        throw error;
+      }
+
+      setAddSiteError(ADD_SITE_SUPPORT_MESSAGE);
+      throw error;
+    }
+  };
+
   return (
     <Box className={styles.root}>
       <PVFleetExplorerHeader
@@ -65,6 +86,7 @@ export const FleetExplorer = () => {
         mappableCount={mappableCount}
         missingCoordCount={missingCoordCount}
         onAddSite={handleAddSite}
+        onBulkAddSites={handleBulkAddSites}
       />
 
       {successMessage && (

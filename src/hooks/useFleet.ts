@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { addSiteToFleet, loadFleet } from "@/data/fleet";
+import { addSiteToFleet, addSitesToFleet, loadFleet } from "@/data/fleet";
 import type { CleanSite, SiteFormInput } from "@/types/site";
 
 type FleetState = {
@@ -40,6 +40,15 @@ export function useFleet() {
     return site;
   }, []);
 
+  const addSites = useCallback(async (inputs: SiteFormInput[]) => {
+    const sites = await addSitesToFleet(inputs);
+    setState((prev) => ({
+      ...prev,
+      sites: [...prev.sites, ...sites],
+    }));
+    return sites;
+  }, []);
+
   useEffect(() => {
     void refresh();
   }, [refresh]);
@@ -48,5 +57,6 @@ export function useFleet() {
     ...state,
     refresh,
     addSite,
+    addSites,
   };
 }

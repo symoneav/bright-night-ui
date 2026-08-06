@@ -40,7 +40,7 @@ describe("normalizeSite", () => {
         "Missing coordinates — not shown on map",
         "Missing orientation (azimuth/tilt)",
         "Implausible or missing system size",
-        "Future or missing install date",
+        "Missing install date",
       ]),
     );
   });
@@ -61,5 +61,21 @@ describe("normalizeSite", () => {
     expect(site.coordinates).toEqual({ lat: 34.05, lng: -118.25 });
     expect(site.flags).not.toContain("Missing coordinates — not shown on map");
     expect(site.flags).not.toContain("Missing orientation (azimuth/tilt)");
+  });
+
+  it("preserves today's installation date", () => {
+    const site = normalizeSite({
+      ...messyRow,
+      system_size_DC: "5.5",
+      azimuth_1: "180",
+      tilt_1: "20",
+      tracking: "0",
+      installation_date: "2026-08-05",
+      latitude: "34.05",
+      longitude: "-118.25",
+    });
+
+    expect(site.installationDate).toBe("2026-08-05");
+    expect(site.flags).not.toContain("Missing install date");
   });
 });
