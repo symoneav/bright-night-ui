@@ -5,13 +5,18 @@ import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
 import Typography from "@mui/material/Typography";
 import dynamic from "next/dynamic";
-import { useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useFleet } from "@/hooks/useFleet";
 import {
   ADD_SITE_SUPPORT_MESSAGE,
   isAddSiteUserError,
 } from "@/data/fleet";
+import {
+  resolveCompareSites,
+  toggleCompareSelection,
+} from "@/lib/compare-sites";
 import type { CleanSite, SiteFormInput } from "@/types/site";
+import { ComparisonChart } from "./ComparisonChart";
 import { SiteDetailDrawer } from "./SiteDetail/site-detail-drawer";
 import { PVFleetExplorerHeader } from "./PVFleetExplorerHeader/pv-fleet-explorer-header";
 import styles from "@/styles/fleet-explorer.module.scss";
@@ -22,12 +27,26 @@ export const FleetExplorer = () => {
   const { sites, loading, error, addSite, addSites } = useFleet();
   const [focusedSite, setFocusedSite] = useState<CleanSite | null>(null);
   const [selectedSite, setSelectedSite] = useState<CleanSite | null>(null);
+  const [compareSiteIds, setCompareSiteIds] = useState<string[]>([]);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [addSiteError, setAddSiteError] = useState<string | null>(null);
+
+  const compareSites = useMemo(
+    () => resolveCompareSites(sites, compareSiteIds),
+    [sites, compareSiteIds],
+  );
 
   const handleSiteExpand = (site: CleanSite) => {
     setSelectedSite(site);
   };
+
+  const handleToggleCompare = useCallback((siteId: string) => {
+    setCompareSiteIds((current) => toggleCompareSelection(current, siteId));
+  }, []);
+
+  const handleRemoveFromCompare = useCallback((siteId: string) => {
+    setCompareSiteIds((current) => current.filter((id) => id !== siteId));
+  }, []);
 
   const mappableCount = sites.filter(
     (site) => site.coordinates !== null,
@@ -123,20 +142,28 @@ export const FleetExplorer = () => {
           <Alert severity="error">{error}</Alert>
         </Box>
       )}
-
+ 
       {!loading && !error && (
         <Box className={styles.mapContainer}>
           <MapView
             sites={sites}
+            compareSites={compareSites}
             focusedSite={focusedSite}
             onSiteExpand={handleSiteExpand}
           />
         </Box>
       )}
 
+      <ComparisonChart
+        sites={compareSites}
+        onRemoveSite={handleRemoveFromCompare}
+      />
+
       <SiteDetailDrawer
         site={selectedSite}
+        compareSiteIds={compareSiteIds}
         onClose={() => setSelectedSite(null)}
+        onToggleCompare={handleToggleCompare}
       />
     </Box>
   );

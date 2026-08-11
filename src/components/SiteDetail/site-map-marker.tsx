@@ -1,5 +1,3 @@
-"use client";
-
 import type { Ref } from "react";
 import L from "leaflet";
 import { Marker, Popup } from "react-leaflet";

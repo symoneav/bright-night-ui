@@ -1,9 +1,6 @@
 /**
  * @vitest-environment node
  */
-/**
- * @vitest-environment node
- */
 import { describe, expect, it } from "vitest";
 import {
   buildComparisonChartData,
@@ -41,23 +38,26 @@ const siteB: CleanSite = {
 };
 
 describe("buildComparisonChartData", () => {
-  it("maps sites to chart rows preserving nulls", () => {
-    expect(buildComparisonChartData([siteA, siteB])).toEqual([
-      {
-        systemId: "SITE_A",
-        systemSizeKw: 5.5,
-        azimuthDeg: 180,
-        tiltDeg: 20,
-        confidence: 100,
-      },
-      {
-        systemId: "SITE_B",
-        systemSizeKw: null,
-        azimuthDeg: null,
-        tiltDeg: 20,
-        confidence: 45,
-      },
-    ]);
+  it("includes estimated energy and carbon when inputs are complete", () => {
+    const [rowA] = buildComparisonChartData([siteA]);
+
+    expect(rowA.systemId).toBe("SITE_A");
+    expect(rowA.annualEnergyKwh).toBeTypeOf("number");
+    expect(rowA.carbonOffsetTons).toBeTypeOf("number");
+    expect(rowA.azimuthDeg).toBe(180);
+    expect(rowA.tiltDeg).toBe(20);
+  });
+
+  it("returns null energy and carbon when estimation inputs are missing", () => {
+    const [rowB] = buildComparisonChartData([siteB]);
+
+    expect(rowB).toEqual({
+      systemId: "SITE_B",
+      annualEnergyKwh: null,
+      carbonOffsetTons: null,
+      azimuthDeg: null,
+      tiltDeg: 20,
+    });
   });
 });
 
@@ -99,9 +99,8 @@ describe("canAddToComparison", () => {
 
 describe("resolveCompareSites", () => {
   it("returns sites in selection order and drops unknown ids", () => {
-    expect(resolveCompareSites([siteA, siteB], ["SITE_B", "UNKNOWN", "SITE_A"])).toEqual([
-      siteB,
-      siteA,
-    ]);
+    expect(
+      resolveCompareSites([siteA, siteB], ["SITE_B", "UNKNOWN", "SITE_A"]),
+    ).toEqual([siteB, siteA]);
   });
 });
