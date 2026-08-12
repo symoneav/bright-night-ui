@@ -1,3 +1,4 @@
+import { estimateSiteEnergy } from "@/lib/energy-calculations";
 import type { CleanSite } from "@/types/site";
 
 export const MIN_COMPARE_SITES = 2;
@@ -5,22 +6,26 @@ export const MAX_COMPARE_SITES = 5;
 
 export type ComparisonChartRow = {
   systemId: string;
-  systemSizeKw: number | null;
+  annualEnergyKwh: number | null;
+  carbonOffsetTons: number | null;
   azimuthDeg: number | null;
   tiltDeg: number | null;
-  confidence: number;
 };
 
 export function buildComparisonChartData(
   sites: CleanSite[],
 ): ComparisonChartRow[] {
-  return sites.map((site) => ({
-    systemId: site.systemId,
-    systemSizeKw: site.systemSizeKw,
-    azimuthDeg: site.azimuthDeg,
-    tiltDeg: site.tiltDeg,
-    confidence: site.confidence,
-  }));
+  return sites.map((site) => {
+    const { annualEnergyKwh, carbonOffsetTons } = estimateSiteEnergy(site);
+
+    return {
+      systemId: site.systemId,
+      annualEnergyKwh,
+      carbonOffsetTons,
+      azimuthDeg: site.azimuthDeg,
+      tiltDeg: site.tiltDeg,
+    };
+  });
 }
 
 export function toggleCompareSelection(

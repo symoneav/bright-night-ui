@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import L from "leaflet";
-import { MapContainer, TileLayer } from "react-leaflet";
+import L, { LatLngExpression } from "leaflet";
+import { MapContainer, Polygon, TileLayer, useMap } from "react-leaflet";
 import { filterSitesWithinRadius } from "@/lib/geo";
 import {
   DEFAULT_MAP_ZOOM,
@@ -18,6 +18,8 @@ import { InitialLocationSync } from "@/utils/initial-location-sync";
 import { MapRecenterButton } from "./RecenterButton";
 import styles from "@/styles/map-view.module.scss";
 
+
+
 // Fix default marker icons broken by bundlers
 delete (L.Icon.Default.prototype as unknown as { _getIconUrl?: unknown })
   ._getIconUrl;
@@ -32,15 +34,27 @@ L.Icon.Default.mergeOptions({
 
 type MapViewProps = {
   sites: CleanSite[];
+  compareSites: CleanSite[];
   focusedSite?: CleanSite | null;
   onSiteExpand: (site: CleanSite) => void;
 };
 
+function FitBoundsToPolygon({ positions }: { positions: LatLngExpression[] }) {
+  const map = useMap();
+  useEffect(() => {
+    const bounds = L.latLngBounds(positions);
+    map.fitBounds(bounds);
+  }, [map, positions]);
+  return null;
+}
 export default function MapView({
   sites,
   focusedSite = null,
   onSiteExpand,
+  compareSites,
 }: MapViewProps) {
+  const REGION_BOUNDS = compareSites.length > 0 ?
+    compareSites.map((site) => [site.coordinates?.lat, site.coordinates?.lng]): null;
   const [userLocation, setUserLocation] = useState<[number, number] | null>(
     null,
   );
@@ -95,6 +109,7 @@ export default function MapView({
     setFilterCenter(userLocation);
   };
 
+
   return (
     <Box className={styles.root}>
       <MapContainer
@@ -123,10 +138,13 @@ export default function MapView({
           sites={nearbySites}
           excludeSystemId={focusedSite?.systemId}
           onSiteExpand={onSiteExpand}
+        
         />
         {focusedSite?.coordinates && (
           <FocusedSiteLayer site={focusedSite} onSiteExpand={onSiteExpand} />
         )}
+        {REGION_BOUNDS && <Polygon positions={REGION_BOUNDS as LatLngExpression[]} pathOptions={{ color: "red" }} />}
+        {REGION_BOUNDS && <FitBoundsToPolygon positions={REGION_BOUNDS as LatLngExpression[]} />}
       </MapContainer>
       <Box className={styles.statusOverlay}>
         <Typography variant="body2" color="text.secondary">

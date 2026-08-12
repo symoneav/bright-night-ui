@@ -5,6 +5,7 @@ import Typography from "@mui/material/Typography";
 import type { CleanSite } from "@/types/site";
 import styles from "@/styles/site-detail-drawer.module.scss";
 import { SiteDetailContent } from "./site-detail-content";
+import { SiteCompareCheckbox } from "./site-compare-checkbox";
 
 type SiteDetailDrawerProps = {
   site: CleanSite | null;
@@ -12,8 +13,10 @@ type SiteDetailDrawerProps = {
 };
 
 export function SiteDetailDrawer({ site, onClose }: SiteDetailDrawerProps) {
+  const isOpen = site !== null;
+
   return (
-    <Drawer anchor="right" open={site !== null} onClose={onClose}>
+    <Drawer anchor="right" open={isOpen} onClose={onClose}>
       <Box
         className={styles.panel}
         role="dialog"
@@ -35,6 +38,9 @@ export function SiteDetailDrawer({ site, onClose }: SiteDetailDrawerProps) {
         {site && (
           <>
             <SiteDetailContent site={site} showTitle={false} />
+
+            <SiteCompareCheckbox siteId={site.systemId} />
+
             <Button variant="outlined" onClick={onClose} fullWidth>
               Close
             </Button>

@@ -12,14 +12,30 @@ import {
   isAddSiteUserError,
 } from "@/data/fleet";
 import type { CleanSite, SiteFormInput } from "@/types/site";
+import { CompareProvider, useCompare } from "@/context/compare-context";
+import { ComparisonChart } from "./ComparisonChart";
 import { SiteDetailDrawer } from "./SiteDetail/site-detail-drawer";
 import { PVFleetExplorerHeader } from "./PVFleetExplorerHeader/pv-fleet-explorer-header";
 import styles from "@/styles/fleet-explorer.module.scss";
 
 const MapView = dynamic(() => import("@/components/MapView"), { ssr: false });
 
-export const FleetExplorer = () => {
-  const { sites, loading, error, addSite, addSites } = useFleet();
+type FleetExplorerContentProps = {
+  sites: CleanSite[];
+  loading: boolean;
+  error: string | null;
+  addSite: (input: SiteFormInput) => Promise<CleanSite>;
+  addSites: (inputs: SiteFormInput[]) => Promise<CleanSite[]>;
+};
+
+function FleetExplorerContent({
+  sites,
+  loading,
+  error,
+  addSite,
+  addSites,
+}: FleetExplorerContentProps) {
+  const { compareSites, removeFromCompare } = useCompare();
   const [focusedSite, setFocusedSite] = useState<CleanSite | null>(null);
   const [selectedSite, setSelectedSite] = useState<CleanSite | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -123,21 +139,43 @@ export const FleetExplorer = () => {
           <Alert severity="error">{error}</Alert>
         </Box>
       )}
-
+ 
       {!loading && !error && (
         <Box className={styles.mapContainer}>
           <MapView
             sites={sites}
+            compareSites={compareSites}
             focusedSite={focusedSite}
             onSiteExpand={handleSiteExpand}
           />
         </Box>
       )}
 
+      <ComparisonChart
+        sites={compareSites}
+        onRemoveSite={removeFromCompare}
+      />
+
       <SiteDetailDrawer
         site={selectedSite}
         onClose={() => setSelectedSite(null)}
       />
     </Box>
+  );
+}
+
+export const FleetExplorer = () => {
+  const { sites, loading, error, addSite, addSites } = useFleet();
+
+  return (
+    <CompareProvider sites={sites}>
+      <FleetExplorerContent
+        sites={sites}
+        loading={loading}
+        error={error}
+        addSite={addSite}
+        addSites={addSites}
+      />
+    </CompareProvider>
   );
 };

@@ -1,5 +1,7 @@
 export const MAX_SYSTEM_SIZE_KW = 10_000;
 export const COORD_SENTINEL = -9999;
+export const MIN_SITES_FOR_COMPARISON = 2;
+export const MAX_SITES_FOR_COMPARISON = 5;
 
 export const US_LAT_MIN = 24;
 export const US_LAT_MAX = 50;

@@ -17,14 +17,14 @@ export async function loadSitesFromDisk(): Promise<CleanSite[]> {
   return cachedSites;
 }
 
-export function getCachedSites(): CleanSite[] | null {
-  return cachedSites;
-}
+// export function getCachedSites(): CleanSite[] | null {
+//   return cachedSites;
+// }
 
 export function setCachedSites(sites: CleanSite[]): void {
   cachedSites = sites;
 }
 
-export function clearCachedSites(): void {
-  cachedSites = null;
-}
+// export function clearCachedSites(): void {
+//   cachedSites = null;
+// }
