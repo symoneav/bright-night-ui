@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
+import { CompareProvider } from "@/context/compare-context";
 import { SiteMapMarker } from "../site-map-marker";
 import { defaultSiteMarkerIcon } from "@/lib/marker-icons";
 import { mockSite } from "@/test/mock-site";
@@ -20,11 +21,13 @@ describe("SiteMapMarker", () => {
 
   it("renders a compact site summary in a marker popup", () => {
     renderWithProviders(
-      <SiteMapMarker
-        site={mockSite}
-        icon={defaultSiteMarkerIcon}
-        onExpand={vi.fn()}
-      />,
+      <CompareProvider sites={[mockSite]}>
+        <SiteMapMarker
+          site={mockSite}
+          icon={defaultSiteMarkerIcon}
+          onExpand={vi.fn()}
+        />
+      </CompareProvider>,
     );
 
     expect(screen.getByTestId("leaflet-popup")).toBeInTheDocument();
